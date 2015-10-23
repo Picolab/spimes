@@ -1,6 +1,5 @@
-####Spimes
+##Spimes
 ========
-Repository for squaretag.
 Track anything through space and time with squaretag.
   ```
   spime << space & time ; 
@@ -15,8 +14,8 @@ Track anything through space and time with squaretag.
   npm install http-server -g
   ```
 3. Now using command prompt or terminal, browse to a folder with some html you want to serve as http. (ie: c:\someproject\).
-4. Run: 
-  ```
+4. Run:
+   ```
   http-server
   ```
 5. Open your browser and visit http://localhost:8080.
