@@ -1,4 +1,4 @@
-###spimes
+###Spimes
 ========
 Repository for squaretag
 Track anything through space and time with squaretag.
@@ -7,7 +7,7 @@ spime << space & time ;
 ```
 
 ##Serving locally
-==================
+=========
 [Local web server for testing / development](http://chrisbitting.com/2014/06/16/local-web-server-for-testing-development-using-node-js-and-http-server/).
 1. Install node.js if you don’t already have installed (from http://nodejs.org).
 2. In a command prompt / terminal, now run: 
