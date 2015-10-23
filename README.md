@@ -1,10 +1,10 @@
-###Spimes
+####Spimes
 ========
-Repository for squaretag
+Repository for squaretag.
 Track anything through space and time with squaretag.
-```
-spime << space & time ; 
-```
+  ```
+  spime << space & time ; 
+  ```
 
 ##Serving locally
 =========
