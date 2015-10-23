@@ -14,9 +14,9 @@ spime << space & time ;
   ```
   npm install http-server -g
   ```
-3 .Now using command prompt or terminal, browser to a folder with some html you want to serve as http. (ie: c:\someproject\).
-4 .Run: 
+3. Now using command prompt or terminal, browser to a folder with some html you want to serve as http. (ie: c:\someproject\).
+4. Run: 
   ```
   http-server
   ```
-5 .Open your browser and visit http://localhost:8080.
+5. Open your browser and visit http://localhost:8080.
