@@ -1,0 +1,1 @@
+// ruleset for Spime management
