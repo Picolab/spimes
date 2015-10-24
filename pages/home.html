@@ -1,4 +1,10 @@
 <div style="padding-left:130px;padding-right:200px;">
    <h1>Hello, world!</h1>
+   
+  <div ng-app='myApp' ng-controller='DemoController'>
+  <div infinite-scroll='loadMore()' infinite-scroll-distance='2'>
+    <img ng-repeat='image in images' ng-src='http://placehold.it/225x250&text={{image}}'>
+  </div>
   
+</div>
 </div>
