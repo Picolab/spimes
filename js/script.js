@@ -8,6 +8,9 @@ app.config(function($routeProvider){
           .when('/',{
                 templateUrl: 'pages/home.html'
           })
+          .when('/spimes',{
+                templateUrl: 'pages/spimes.html'
+          })
           .when('/about',{
                 templateUrl: 'pages/about.html'
           });
