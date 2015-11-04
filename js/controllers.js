@@ -1,3 +1,5 @@
+'use strict';
+
 /* Controllers */
 
 app.controller('cfgController',function($scope){
