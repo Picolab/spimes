@@ -18,11 +18,7 @@ app.config(function($routeProvider){
 
 });
 
-app.controller('cfgController',function($scope){
 
-      $scope.message="Hello world";
-
-});
 
 var myApp = angular.module('myApp', ['infinite-scroll']);
 myApp.controller('DemoController', function($scope) {
