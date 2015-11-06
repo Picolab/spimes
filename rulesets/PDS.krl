@@ -36,21 +36,26 @@ ruleset a169x676 {
   global {
     thisRID = meta:rid();
 
-    // --------------------------------------------
-    get_item = function(namespace, keyvalue) {
-      ent:elements{[namespace, keyvalue]}
-    };
 
-    // --------------------------------------------
-    get_items = function(namespace) {
-      ent:elements{namespace}
-    };
-
-    // --------------------------------------------
+   /* // -fordebugging???-------------------------------------------
     get_all_items = function() {
       ent:elements;
     };
-    
+  */
+    items = function (namespace, key){
+          // --------------------------------------------
+      item = function(namespace, keyvalue) {
+        ent:elements{[namespace, keyvalue]}
+      };
+
+      // --------------------------------------------
+      multipleItems = function(namespace) {
+        ent:elements{namespace}
+      };
+      return = (keyvalue.isnull()) => item(namespace, key) | multipleItems( namespace);
+      return; 
+    }
+    // set up pagination. look at fuse_fuel.krl allfillup 
     get_keys = function(namespace, sort_opt, num_to_return) {
         the_keys = this2that:transform(ent:elements{[namespace]}, sort_opt);
         the_keys.isnull()          => [] |
