@@ -3,19 +3,22 @@ ruleset a169x676 {
     name "PDS"
     description <<
       Pico Data Services
-
-      Copyright 2013 Kynetx, All Rights Reserved
     >>
     author "Phil Windley & Ed Orcutt"
     logging off
     // errors to a169x705
 
     sharing on
-    provides get_item, get_items, get_keys, get_me, get_all_me,
+    provides items, get_keys, profile,
              list_settings, get_setting_data_value,
              get_setting, get_setting_value, get_setting_all, get_setting_data, get_setting_schema,
              get_config_value, get_all_items
-
+  
+/*    provides get_item, get_items, get_keys, get_me, get_all_me,
+             list_settings, get_setting_data_value,
+             get_setting, get_setting_value, get_setting_all, get_setting_data, get_setting_schema,
+             get_config_value, get_all_items
+*/
     // --------------------------------------------
     // ent:me
     // ent:elements
@@ -63,15 +66,17 @@ ruleset a169x676 {
                                     | the_keys
     };
 
-    // --------------------------------------------
-    get_me = function(k) {
-      ent:me{k};
-    };
+    profile = function(key){
+        get_me = function(k) {
+          ent:me{k};
+        };
+        get_all_me = function() {
+          ent:me;
+        };
+        return = (key.isnull()) => get_all_me() | get_me(key);
+        return; 
+    }
 
-    // --------------------------------------------
-    get_all_me = function() {
-      ent:me;
-    };
 
     // --------------------------------------------
     list_settings = function() {
@@ -141,22 +146,14 @@ ruleset a169x676 {
   rule PDS_add_item {
     select when pds new_data_available
     pre {
-        should_raise_gtour_event = ((event:attr("namespace") eq "meta") && (event:attr("keyvalue") eq "namespace") && (event:attr("gtourInit").match(re/yes/gi)));
-        should_raise_gtour_pico_details_stored_event = (event:attr("shouldRaiseGTourDoneEvent") eq "YES");
     }
     always {
-      log "AKO PDS ADD ITEM:";
+      log "PDS ADD ITEM:";
       log event:attrs();
       set ent:elements{[event:attr("namespace"), event:attr("keyvalue")]} event:attr("value");
       raise pds event new_data_added with 
          namespace = event:attr("namespace") and
          keyvalue = event:attr("keyvalue");
-      raise gtour event "new_namespace_added"
-        with _api = "sky"
-        if should_raise_gtour_event;
-      raise gtour event "did_store_pico_details"
-        with _api = "sky"
-        if  should_raise_gtour_pico_details_stored_event;
     }
   }
 
