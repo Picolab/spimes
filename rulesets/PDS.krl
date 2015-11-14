@@ -20,7 +20,7 @@ ruleset a169x676 {
              get_config_value, get_all_items
 */
     // --------------------------------------------
-    // ent:me
+    // ent:profile
     // ent:elements
     // ent:settings
     //
@@ -32,7 +32,7 @@ ruleset a169x676 {
     //   }
     //
     // --------------------------------------------
-    // ent:me{"myProfileSchemaName"}
+    // ent:profile{"myProfileSchemaName"}
 
   }
 
@@ -67,14 +67,18 @@ ruleset a169x676 {
     };
 
     profile = function(key){
-        get_me = function(k) {
-          ent:me{k};
+        get_profile = function(k) {
+          ent:profile{k};
         };
-        get_all_me = function() {
-          ent:me;
+        get_all_profile = function() {
+          ent:profile;
         };
-        return = (key.isnull()) => get_all_me() | get_me(key);
+        return = (key.isnull()) => get_all_profile() | get_profile(key);
         return; 
+        {
+       'status'   : ("succes"),
+        'profiles'     : return
+      };
     }
 
 
@@ -86,31 +90,39 @@ ruleset a169x676 {
       });
       foo
     };
+    settings = function(Rid,Key){
+      get_setting_all = function() {
+        ent:settings
+      };
+      get_setting = function(setRID) {
+        ent:settings{setRID}
+      };
+      get_setting_value = function(setRID, setKey) {
+        ent:settings{[setRID, setKey]}
+      };
+      return = (Key.isnull()) => ((Rid.isnull()) => get_setting_all() | get_setting(Rid) ) |
+                              Rid.isnull() => "error" | get_setting_value(Rid,Key):
+      return;
+
+
+
+    }
+    // --------------------------------------------
+
 
     // --------------------------------------------
-    get_setting_all = function() {
-      ent:settings
-    };
 
     // --------------------------------------------
-    get_setting = function(setRID) {
-      ent:settings{setRID}
-    };
+
+    // I dont Think we need this function. --------------------------------------------
+    //get_setting_data = function(setRID) {
+   //  ent:settings{[setRID, "setData"]}
+  //  };
 
     // --------------------------------------------
-    get_setting_value = function(setRID, setKey) {
-      ent:settings{[setRID, setKey]}
-    };
-
-    // --------------------------------------------
-    get_setting_data = function(setRID) {
-     ent:settings{[setRID, "setData"]}
-    };
-
-    // --------------------------------------------
-    get_setting_schema = function(setRID) {
-     ent:settings{[setRID, "setSchema"]}
-    };
+ //   get_setting_schema = function(setRID) {
+ //    ent:settings{[setRID, "setSchema"]}
+ //   };
 
     // --------------------------------------------
     get_setting_data_value = function(setRID, setKey) {
@@ -124,12 +136,12 @@ ruleset a169x676 {
 
     // --------------------------------------------
     defaultProfile = {
-      "myProfileName": "",
-      "myProfileEmail": "",
-      "myProfilePhone": "",
-      "myProfileNotes": "",
-      "myProfileDescription": "",
-      "myProfilePhoto": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
+      "Name": "",
+      "Notes": "",
+      "location": "",
+      "model": "",
+      "Description": "",
+      "Photo": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
     };
 
     defaultCloud = {
@@ -218,14 +230,14 @@ ruleset a169x676 {
   }
 
   // ------------------------------------------------------------------------
-  rule PDS_init_me {
+  rule PDS_init_profile {
     select when web sessionReady
     pre {
-      me = ent:me;
+      profile = ent:profile;
     }
-    if (ent:me == 0) then { noop(); }
+    if (ent:profile == 0) then { noop(); }
     fired {
-      set ent:me defaultProfile;
+      set ent:profile defaultProfile;
     }
   }
 
@@ -267,7 +279,7 @@ ruleset a169x676 {
                 ;
     }
     always {
-      set ent:me newProfileWithImage;
+      set ent:profile newProfileWithImage;
       raise pds event "profile_updated" attributes newProfileWithImage;
     }
   }
@@ -281,8 +293,8 @@ ruleset a169x676 {
     }
 
     fired {
-      set ent:me {} if not ent:me;
-      set ent:me{profile_key} profile_value;
+      set ent:profile {} if not ent:profile;
+      set ent:profile{profile_key} profile_value;
       raise pds event "profile_updated" on last;
     }
 
@@ -300,7 +312,7 @@ ruleset a169x676 {
   rule PDS_update_doorbell {
     select when pds new_doorbell_available
     always {
-      set ent:me{"myDoorbell"} event:attr("doorbell");
+      set ent:profile{"myDoorbell"} event:attr("doorbell");
       set ent:elements{["myCloud", "myDoorbell"]} event:attr("doorbell");
     }
   }
