@@ -11,6 +11,7 @@ ruleset  {
 
     //use module b16x24 alias system_credentials
     use module a169x676 alias pds
+    use module b507199x5 alias nano_manager
 
     provides create, edit, remove , spimes
     sharing on
@@ -20,6 +21,25 @@ ruleset  {
   //dispatch {
     //domain "ktest.heroku.com"
   //}
+  /*
+
+	spime = {
+		// pr
+		discription :
+		name :
+		policies
+
+		loction : 
+		eventChain :
+		model (stl) :
+		model instruction :
+
+	}
+
+
+
+
+  */
   global { 
  	spimes = function (key){
           pds:profile(k);
@@ -36,14 +56,23 @@ ruleset  {
   rule createSpime{
   	select when spime create_spime
   	pre{
-
+  		name = event:attr("name");
+  		discription = event:attr("discription");
   	}
   	{
-
+  		noop();
   	}
   	fired{
-
-  	}
+	// took from fuse_fleet.. whats api for?
+		raise pds init; 
+		raise pds event new_map_available 
+            attributes 
+      		{	
+      			"namespace": "spime",
+           		"mapvalues": { "name": name,
+		     					"discription": discription 
+		     				 }
+          	};
 
   }
   
