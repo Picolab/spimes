@@ -14,23 +14,18 @@ ruleset a169x676 {
              list_settings, get_setting_data_value,
              get_setting, get_setting_value, get_setting_all, get_setting_data, get_setting_schema,
              get_config_value, get_all_items
-  
-/*    provides get_item, get_items, get_keys, get_me, get_all_me,
-             list_settings, get_setting_data_value,
-             get_setting, get_setting_value, get_setting_all, get_setting_data, get_setting_schema,
-             get_config_value, get_all_items
-*/
+
     // --------------------------------------------
     // ent:profile
     // ent:general
-    // ent:settings
-    //
-    //   "a169x222" : {
-    //     "setName"   : "",
-    //     "setRID"    : "a169x222",
-    //     "setData"   : {},
-    //     "setSchema" : []
-    //   }
+    // 
+    // ent:settings 
+    //     "a169x222" : {
+    //       "setName"   : "",
+    //       "setRID"    : "a169x222",
+    //       "setData"   : {},
+    //       "setSchema" : []
+    //     }
     //
     // --------------------------------------------
     // ent:profile{"myProfileSchemaName"}
@@ -47,23 +42,24 @@ ruleset a169x676 {
     };
   */
     items = function (namespace, key){
-          // --------------------------------------------
       item = function(namespace, keyvalue) {
         ent:general{[namespace, keyvalue]}
       };
 
-      // --------------------------------------------
       multipleItems = function(namespace) {
         ent:general{namespace}
       };
       return = (keyvalue.isnull()) => item(namespace, key) | multipleItems( namespace);
-      return; 
+      {
+       'status'   : ("succes"),
+        'general'     : return
+      };
     }
     // set up pagination. look at fuse_fuel.krl allfillup 
     get_keys = function(namespace, sort_opt, num_to_return) {
-        the_keys = this2that:transform(ent:general{[namespace]}, sort_opt);
+        the_keys = this2that:transform(ent:general{[namespace]}, sort_opt); // get all the keys sorted by the key value provided in sort_opt
         the_keys.isnull()          => [] |
-        not num_to_return.isnull() => the_keys.slice(0,num_to_return-1)
+        not num_to_return.isnull() => the_keys.slice(0,num_to_return-1) // only return how much we want
                                     | the_keys
     };
 
@@ -75,19 +71,21 @@ ruleset a169x676 {
           ent:profile;
         };
         return = (key.isnull()) => get_all_profile() | get_profile(key);
-        return; 
         {
        'status'   : ("succes"),
         'profiles'     : return
-      };
-    }
+        };
+    };
 
 
     // --------------------------------------------
     list_settings = function() {
       foo = ent:settings.keys().map(function(setRID) {
         setName = ent:settings{[setRID,"setName"]};
-        {"setRID": setRID, "setName": setName}
+        {
+          "setRID": setRID,
+          "setName": setName
+        }
       });
       foo
     };
@@ -102,9 +100,8 @@ ruleset a169x676 {
       get_setting_value = function(setRID, setKey) {
         ent:settings{[setRID, setKey]}
       };
-      return = (Key.isnull()) => ((Rid.isnull()) => get_setting_all() | get_setting(Rid) ) |
-                              Rid.isnull() => "error" | get_setting_value(Rid,Key):
-      return;
+      return = (Key.isnull()) => ((Rid.isnull()) => get_setting_all() | get_setting(Rid) ) | (
+                              Rid.isnull() => "error" | get_setting_value(Rid,Key));
       {
        'status'   : "succes",
         'settings' : return
@@ -152,27 +149,27 @@ ruleset a169x676 {
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       keyvalue = event:attr("key").defaultsTo("", "no key");
-      tuple = [namespace, keyvalue]; //array of keys
+      hash_path = [namespace, keyvalue]; //array of keys
       value =  event:attr("value").defaultsTo("", "no value");
     }
     always {
-      set ent:general{tuple} value;
+      set ent:general{hash_path} value;
       raise pds event new_data_added with 
          namespace = namespace and
          keyvalue = keyvalue;
     }
   }
 
-  rule PDS_update_item { // I dont get what akey is or why... why use a map of key to map structure?
+  rule PDS_update_item { 
     select when pds updated_data_available
     	foreach(event:attr("value") || {}) setting(akey, avalue)
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       keyvalue = event:attr("key").defaultsTo("", "no key");
-      tuple = [namespace, keyvalue, akey];
+      hash_path = [namespace, keyvalue, akey];
     }
     always {
-      set ent:general{ tuple } avalue;
+      set ent:general{ hash_path } avalue;
       raise pds event data_updated with 
         namespace = namespace and
         keyvalue = keyvalue if last;
@@ -184,10 +181,10 @@ ruleset a169x676 {
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       keyvalue = event:attr("key").defaultsTo("", "no key");
-      tuple = [namespace, keyvalue];
+      hash_path = [namespace, keyvalue];
     }
     always {
-      clear ent:general{tuple};
+      clear ent:general{hash_path};
       raise pds event data_deleted with 
         namespace = namespace and
         keyvalue = keyvalue;
@@ -220,17 +217,17 @@ ruleset a169x676 {
     }
   }
 
-  rule PDS_add2_item { // uses different tuple to add a varible
+  rule PDS_add2_item { // uses different hash_path to add a varible
     select when pds new_data2_available
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       section = event:attr("section").defaultsTo("", "no section");
       keyvalue = event:attr("keyvalue").defaultsTo("", "no keyvalue");
-      tuple = [namespace, section, keyvalue];
+      hash_path = [namespace, section, keyvalue];
       value =  event:attr("value").defaultsTo("", "no value");
     }
     always {
-      set ent:general{tuple} value;
+      set ent:general{hash_path} value;
     }
   }
   // I dont think we need myCloud any more.
@@ -308,12 +305,12 @@ ruleset a169x676 {
   rule PDS_new_profile_schema {
     select when pds new_profile_schema
     pre{
-      tuple = ["myCloud", "mySchemaName"]; // whats my cloud for ???
+      hash_path = ["myCloud", "mySchemaName"]; // whats my cloud for ???
       mySchemaName = event:attr("mySchemaName").defaultsTo("", "no mySchemaName");
 
     }
     always {
-      set ent:general{tuple} mySchemaName; // why is this stored in general and not profile?
+      set ent:general{hash_path} mySchemaName; // why is this stored in general and not profile?
     }
   }
 
@@ -321,11 +318,11 @@ ruleset a169x676 {
     select when pds new_doorbell_available
     pre{
       doorbell = event:attr("doorbell").defaultsTo("", "no doorbell");
-      tuple = ["myCloud", "myDoorbell"];
+      hash_path = ["myCloud", "myDoorbell"];
     }
     always {// why do we put this in both profile and general ??? 
       set ent:profile{"myDoorbell"} doorbell;
-      set ent:general{tuple} doorbell;
+      set ent:general{hash_path} doorbell;
     }
   }
 // settings
@@ -353,10 +350,10 @@ ruleset a169x676 {
     pre {
       setRID    = event:attr("RID").defaultsTo("unknown","no RID");
       setData   = event:attr("Data").defaultsTo({},"no Data");
-      tuple = [setRID, "setData"];
+      hash_path = [setRID, "setData"];
     }
     always {
-      set ent:settings{tuple} setData;
+      set ent:settings{hash_path} setData;
     }
   }
 
@@ -365,10 +362,10 @@ ruleset a169x676 {
     pre {
       setRID    = event:attr("RID").defaultsTo("unknown","no RID");
       setData   = event:attr("Data").defaultsTo({},"no Data");
-      tuple     = [setRID, "setData"];
+      hash_path     = [setRID, "setData"];
     }
     always {
-      set ent:settings{tuple} setData.delete(["setRID"]); // why not use clear????
+      set ent:settings{hash_path} setData.delete(["setRID"]); // why not use clear????
     }
   }
 
@@ -376,12 +373,12 @@ ruleset a169x676 {
     select when pds new_settings_attribute
     pre {
       setRID    = event:attr("RID").defaultsTo("unknown","no RID");
-      setAttr   = event:attr("setAttr").defaultsTo("unknown";,"no setAttr");
-      setValue  = event:attr("Value").defaultsTo("unknown";,"no Value");
-      tuple = [setRID, "setData", setAttr];
+      setAttr   = event:attr("setAttr").defaultsTo("unknown","no setAttr");
+      setValue  = event:attr("Value").defaultsTo("unknown","no Value");
+      hash_path = [setRID, "setData", setAttr];
     }
     always {
-      set ent:settings{tuple} setValue;
+      set ent:settings{hash_path} setValue;
     }
   }
 
