@@ -2,7 +2,7 @@ ruleset b506607x16 {
   meta {
     name "SDS"
     description <<
-      Pico Data Services
+      Spime Data Services
     >>
     author "Phil Windley & Ed Orcutt & PicoLabs"
     logging off
