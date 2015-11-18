@@ -1,13 +1,11 @@
-ruleset a169x676 {
+ruleset b506607x16 {
   meta {
-    name "PDS"
+    name "SDS"
     description <<
       Pico Data Services
     >>
-    author "Phil Windley & Ed Orcutt"
+    author "Phil Windley & Ed Orcutt & PicoLabs"
     logging off
-    // errors to a169x705
-    use module b507199x5 alias nano_manager
 
     sharing on
     provides items, get_keys, profile,
@@ -144,8 +142,8 @@ ruleset a169x676 {
   }
 // Rules
 // ent: general
-  rule PDS_add_item {
-    select when pds new_data_available
+  rule SDS_add_item {
+    select when sds new_data_available
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       keyvalue = event:attr("key").defaultsTo("", "no key");
@@ -154,14 +152,14 @@ ruleset a169x676 {
     }
     always {
       set ent:general{hash_path} value;
-      raise pds event new_data_added with 
+      raise sds event new_data_added with 
          namespace = namespace and
          keyvalue = keyvalue;
     }
   }
 
-  rule PDS_update_item { 
-    select when pds updated_data_available
+  rule SDS_update_item { 
+    select when sds updated_data_available
     	foreach(event:attr("value") || {}) setting(akey, avalue)
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
@@ -170,14 +168,14 @@ ruleset a169x676 {
     }
     always {
       set ent:general{ hash_path } avalue;
-      raise pds event data_updated with 
+      raise sds event data_updated with 
         namespace = namespace and
         keyvalue = keyvalue if last;
     }
   }
 
-  rule PDS_remove_item {
-    select when pds remove_old_data
+  rule SDS_remove_item {
+    select when sds remove_old_data
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       keyvalue = event:attr("key").defaultsTo("", "no key");
@@ -185,40 +183,40 @@ ruleset a169x676 {
     }
     always {
       clear ent:general{hash_path};
-      raise pds event data_deleted with 
+      raise sds event data_deleted with 
         namespace = namespace and
         keyvalue = keyvalue;
     }
   }
 
-  rule PDS_remove_namespace {
-    select when pds remove_namespace
+  rule SDS_remove_namespace {
+    select when sds remove_namespace
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
     }
     always {
       clear ent:general{namespace};
-      raise pds event namespace_deleted with 
+      raise sds event namespace_deleted with 
         namespace = namespace;
     }
   }
 
-  rule PDS_map_item {
-    select when pds new_map_available
+  rule SDS_map_item {
+    select when sds new_map_available
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       mapvalues = event:attr("mapvalues").defaultsTo("", "no mapvalues");
     }
     always {
       set ent:general{namespace} mapvalues;
-      raise pds event new_map_added  with 
+      raise sds event new_map_added  with 
            namespace = namespace and
            mapvalues = mapvalues;
     }
   }
 
-  rule PDS_add2_item { // uses different hash_path to add a varible
-    select when pds new_data2_available
+  rule SDS_add2_item { // uses different hash_path to add a varible
+    select when sds new_data2_available
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       section = event:attr("section").defaultsTo("", "no section");
@@ -232,7 +230,7 @@ ruleset a169x676 {
   }
   // I dont think we need myCloud any more.
   /*
-  rule PDS_init_mycloud {
+  rule SDS_init_mycloud {
     select when web sessionReady
     if (ent:general{"myCloud"} == 0) then { noop(); }
     fired {
@@ -241,7 +239,7 @@ ruleset a169x676 {
   }
 
   // ------------------------------------------------------------------------
-  rule PDS_legacy_person {
+  rule SDS_legacy_person {
     select when web sessionReady
     pre {
       schema = ent:general{["myCloud", "mySchemaName"]};
@@ -255,7 +253,7 @@ ruleset a169x676 {
 
 
   // profile
-  rule PDS_init_profile {
+  rule SDS_init_profile {
     select when web sessionReady // web session ??????????
     pre {
       profile = ent:profile;
@@ -268,10 +266,10 @@ ruleset a169x676 {
     }
   }
 
-  rule PDS_update_profile {
-    select when pds new_profile_item_available
+  rule SDS_update_profile {
+    select when sds new_profile_item_available
     pre {
-      // get when pds was created.
+      // get when sds was created.
       created = profile("_created") || time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"});
       newProfile = event:attrs();
       newProfileWithImage = newProfile
@@ -282,12 +280,12 @@ ruleset a169x676 {
     }
     always {
       set ent:profile newProfileWithImage;
-      raise pds event "profile_updated" attributes newProfileWithImage;
+      raise sds event "profile_updated" attributes newProfileWithImage;
     }
   }
 
-  rule PDS_update_profile_partial {
-    select when pds updated_profile_item_available
+  rule SDS_update_profile_partial {
+    select when sds updated_profile_item_available
     foreach event:attrs() setting(profile_key, profile_value)
 
     {
@@ -297,13 +295,13 @@ ruleset a169x676 {
     fired {
       set ent:profile {} if not ent:profile; // creates a profile ent if not aready there
       set ent:profile{profile_key} profile_value;
-      raise pds event "profile_updated" on last;
+      raise sds event "profile_updated" on last;
     }
 
   }
 
-  rule PDS_new_profile_schema {
-    select when pds new_profile_schema
+  rule SDS_new_profile_schema {
+    select when sds new_profile_schema
     pre{
       hash_path = ["myCloud", "mySchemaName"]; // whats my cloud for ???
       mySchemaName = event:attr("mySchemaName").defaultsTo("", "no mySchemaName");
@@ -314,8 +312,8 @@ ruleset a169x676 {
     }
   }
 
-  rule PDS_update_doorbell {
-    select when pds new_doorbell_available
+  rule SDS_update_doorbell {
+    select when sds new_doorbell_available
     pre{
       doorbell = event:attr("doorbell").defaultsTo("", "no doorbell");
       hash_path = ["myCloud", "myDoorbell"];
@@ -326,8 +324,8 @@ ruleset a169x676 {
     }
   }
 // settings
-  rule PDS_add_settings_schema {
-    select when pds new_settings_schema
+  rule SDS_add_settings_schema {
+    select when sds new_settings_schema
     pre {
       setName   = event:attr("Name").defaultsTo("unknown","no Name");
       setRID    = event:attr("RID").defaultsTo("unknown","no RID");
@@ -345,8 +343,8 @@ ruleset a169x676 {
     }
   }
 
-  rule PDS_add_settings_data {
-    select when pds new_settings_data
+  rule SDS_add_settings_data {
+    select when sds new_settings_data
     pre {
       setRID    = event:attr("RID").defaultsTo("unknown","no RID");
       setData   = event:attr("Data").defaultsTo({},"no Data");
@@ -357,8 +355,8 @@ ruleset a169x676 {
     }
   }
 
-  rule PDS_add_settings {
-    select when pds new_settings_available
+  rule SDS_add_settings {
+    select when sds new_settings_available
     pre {
       setRID    = event:attr("RID").defaultsTo("unknown","no RID");
       setData   = event:attr("Data").defaultsTo({},"no Data");
@@ -369,8 +367,8 @@ ruleset a169x676 {
     }
   }
 
-  rule PDS_add_settings_attribute {
-    select when pds new_settings_attribute
+  rule SDS_add_settings_attribute {
+    select when sds new_settings_attribute
     pre {
       setRID    = event:attr("RID").defaultsTo("unknown","no RID");
       setAttr   = event:attr("setAttr").defaultsTo("unknown","no setAttr");
@@ -382,7 +380,7 @@ ruleset a169x676 {
     }
   }
 
-  rule PDS_application_uninstalled {
+  rule SDS_application_uninstalled {
     select when explicit application_uninstalled
     pre{
       appid = event:attr("appid").defaultsTo("","no appid");
