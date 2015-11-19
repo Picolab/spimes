@@ -15,18 +15,30 @@ ruleset b506607x16 {
 
     // --------------------------------------------
     // ent:profile
+    //      defaultProfile = {
+    //        "Name": "",
+    //        "discription": "",
+    //        "location": "",
+    //        "model": "",
+    //        "model_description": "",
+    //        "Photo": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
+    //      }
     // ent:general
+    //      namespace : {
+    //          spime : {
+    //                key : <value>
+    //          }
+    //     }
     // 
     // ent:settings 
     //     "a169x222" : {
-    //       "setName"   : "",
-    //       "setRID"    : "a169x222",
-    //       "setData"   : {},
-    //       "setSchema" : []
+    //       "Name"   : "",
+    //       "RID"    : "a169x222",
+    //       "Data"   : {},
+    //       "Schema" : []
     //     }
     //
     // --------------------------------------------
-    // ent:profile{"myProfileSchemaName"}
 
   }
 
@@ -215,13 +227,13 @@ ruleset b506607x16 {
     }
   }
 
-  rule SDS_add2_item { // uses different hash_path to add a varible
+  rule SDS_add_spime_item { // uses different hash_path to add a varible
     select when sds new_data2_available
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
-      section = event:attr("section").defaultsTo("", "no section");
+      spime = event:attr("spime").defaultsTo("", "no spime");
       keyvalue = event:attr("keyvalue").defaultsTo("", "no keyvalue");
-      hash_path = [namespace, section, keyvalue];
+      hash_path = [namespace, spime, keyvalue];
       value =  event:attr("value").defaultsTo("", "no value");
     }
     always {
@@ -254,7 +266,7 @@ ruleset b506607x16 {
 
   // profile
   rule SDS_init_profile {
-    select when web sessionReady // web session ??????????
+    select when sds init// web session ??????????
     pre {
       profile = ent:profile;
     }
@@ -299,7 +311,7 @@ ruleset b506607x16 {
     }
 
   }
-
+/*
   rule SDS_new_profile_schema {
     select when sds new_profile_schema
     pre{
@@ -323,7 +335,35 @@ ruleset b506607x16 {
       set ent:general{hash_path} doorbell;
     }
   }
-// settings
+  */
+//----------------------------settings
+    // ent:settings 
+    //     "a169x222" : {
+    //       "Name"   : "",
+    //       "RID"    : "a169x222",
+    //       "Data"   : {},
+    //       "Schema" : []
+    //     }
+  rule SDS_add_to_settings{ // will this fire with out kre stopping the failed passed varibles
+    select when sds new_settings_schema
+    pre {
+      setName   = event:attr("Name").defaultsTo(0,"no Name");
+      setRID    = event:attr("RID").defaultsTo(0,"no RID");
+      setSchema = event:attr("Schema").defaultsTo(0,"no Schema");
+      setData   = event:attr("Data").defaultsTo(0,"no Data");
+      setAttr   = event:attr("setAttr").defaultsTo(0,"no setAttr");
+      setValue  = event:attr("Value").defaultsTo(0,"no Value");
+
+    }
+    always {
+      set ent:settings{[setRID, "Name"]}   setName if not setName;
+      set ent:settings{[setRID, "RID"]}    setRID if not setRID;
+      set ent:settings{[setRID, "Schema"]} setSchema if not setSchema;
+      set ent:settings{[setRID, "Data"]}   setData if not setData;
+      set ent:settings{[setRID, "setData", setAttr]} setValue if not setAttr;
+    }
+  }
+  /*
   rule SDS_add_settings_schema {
     select when sds new_settings_schema
     pre {
@@ -379,7 +419,7 @@ ruleset b506607x16 {
       set ent:settings{hash_path} setValue;
     }
   }
-
+// do we need this rule??????????
   rule SDS_application_uninstalled {
     select when explicit application_uninstalled
     pre{
@@ -389,7 +429,7 @@ ruleset b506607x16 {
       clear ent:settings{appid};
     }
   }
-
+*/
   // ------------------------------------------------------------------------
   // Beyond here there be dragons :)
   // ------------------------------------------------------------------------

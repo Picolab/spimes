@@ -10,10 +10,10 @@ ruleset  {
     logging off
 
     //use module b16x24 alias system_credentials
-    use module a169x676 alias pds
+    use module b506607x16 alias sds
     use module b507199x5 alias nano_manager
 
-    provides create, edit, remove , spimes
+    provides  spime
     sharing on
 
   }
@@ -41,59 +41,49 @@ ruleset  {
 
   */
   global { 
- 	spimes = function (key){
-          pds:profile(k);
+ 	spime = function (profilekey,settingskey,generalkey){
+       spime_profile = sds:profile(profilekey);
+       spime_settings = sds:settings(settingskey);
+       spime_general = sds:general(generalkey);
+
       {
-       'status'   : (rids neq "error"),
-        'rids'     : rids
+       'status'   : ("coool beans!"),
+        'profile'     : spime_profile,
+        'settings'     : spime_settings,
+        'general'     : spime_general
       };
  	}
   }
 
-
   //------------------------------------------------------------------------------------Rules
   //-------------------- Rulesets --------------------
+  //create, 
   rule createSpime{
   	select when spime create_spime
   	pre{
-  		name = event:attr("name");
+  		name = event:attr("owner");
   		discription = event:attr("discription");
   	}
   	{
   		noop();
   	}
-  	fired{
-	// took from fuse_fleet.. whats api for?
-		raise pds init; 
-		raise pds event new_map_available 
-            attributes 
-      		{	
-      			"namespace": "spime",
-           		"mapvalues": { "name": name,
-		     					"discription": discription 
-		     				 }
-          	};
-
+  	always{
+		raise sds init_provile; 
+		    attributes 
+           	{ 
+           		"name": name,
+		    	"discription": discription 
+		    };
+		//raise sds init_settings; 
+		//raise sds init_general; 
+       //     attributes 
+      	//	{	
+      	//		"namespace": "spime",
+        //   		"mapvalues": { "name": name,
+		//     					"discription": discription 
+		//     				 }
+        //  	};
+  	}
   }
   
-  rule installRulesets {
-    select when nano_manager install_rulesets_requested
-    pre { 
-      eci = meta:eci();
-      rids = event:attr("rids").defaultsTo("",standardError(" "));
-      // this will never get an array from a url/event ?
-      rid_list = rids.typeof() eq "array" => rids | rids.split(re/;/); 
-    }
-    if(rids neq "") then { // should we be valid checking?
-      installRulesets(eci, rid_list);
-    }
-    fired {
-      log (standardOut("success installed rids #{rids}"));
-      log(">> successfully  >>");
-          } 
-    else {
-      log(">> could not install rids #{rids} >>");
-    }
-  }
-
 }
