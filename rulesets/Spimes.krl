@@ -43,13 +43,13 @@ ruleset b506607x17 {
   global { 
  	spime = function (profilekey,settingskey,generalkey){
        spime_profile = sds:profile(profilekey);
-       spime_settings = sds:settings(settingskey);
+      // spime_settings = sds:settings(settingskey);
        spime_general = sds:general(generalkey);
 
       {
        'status'   : ("coool beans!"),
         'profile'     : spime_profile,
-        'settings'     : spime_settings,
+        //'settings'     : spime_settings,
         'general'     : spime_general
       };
  	}
