@@ -1,7 +1,7 @@
 
-ruleset spimes {
+ruleset b506607x17 {
   meta {
-    name "nano_manager"
+    name "Spime_manager"
     description <<
      spimes. space and time 
     >>
@@ -11,7 +11,7 @@ ruleset spimes {
 
     //use module b16x24 alias system_credentials
     use module b506607x16 alias sds
-    use module b507199x5 alias nano_manager
+    //use module b507199x5 alias nano_manager
 
     provides  spime
     sharing on
