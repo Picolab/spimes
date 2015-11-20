@@ -71,11 +71,11 @@ ruleset b506607x17 {
 		raise sds event init_provile 
 		    attributes 
            	{ 
-           		"name": name,
-		    	"discription": discription 
+           		"Name": name,
+		    	"Discription": discription 
 		    };
 		//raise sds init_settings; 
-		raise sds event init_general  
+		raise sds event new_map_available // init general  
             attributes 
       		{	
       			"namespace": "spime",

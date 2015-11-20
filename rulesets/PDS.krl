@@ -9,8 +9,7 @@ ruleset b506607x16 {
 
     sharing on
     provides items, get_keys, profile,
-             list_settings, get_setting_data_value,
-             get_setting, get_setting_value, get_setting_all, get_setting_data, get_setting_schema,
+             list_settings, settings,
              get_config_value, get_all_items
 
     // --------------------------------------------
@@ -124,7 +123,7 @@ ruleset b506607x16 {
  //    ent:settings{[setRID, "setSchema"]}
  //   };
 
-    // --------------------------------------------
+    // -------------------------------------------- I think sorting and filtering should be done by client or spime_management and not the server
     get_setting_data_value = function(setRID, setKey) {
       ent:settings{[setRID, "Data", setKey]}
     };
@@ -149,7 +148,9 @@ ruleset b506607x16 {
 //    };
   }
 // Rules
-// ent: general
+
+//------------------------------- ent: general
+
   rule SDS_add_item {
     select when sds new_data_available
     pre {
@@ -262,19 +263,38 @@ ruleset b506607x16 {
 
   // profile
   rule SDS_init_profile {
-    select when sds init// web session ??????????
+    select when sds init_provile
     pre {
       profile = ent:profile;
+      buildProfile = function(){
+        created = time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"});
+        newProfile = event:attrs().defaultsTo(0, "no attrs");
+        ConstructedProfile = newProfile// does || work?
+                  .put(["Name"], (newProfile{"Name"} || defaultProfile{"Name"})) 
+                  .put(["Description"], (newProfile{"Description"} || defaultProfile{"Description"})) 
+                  .put(["location"], (newProfile{"location"} || defaultProfile{"location"})) 
+                  .put(["model"], (newProfile{"model"} || defaultProfile{"model"})) 
+                  .put(["model_description"], (newProfile{"model_description"} || defaultProfile{"model_description"})) 
+                  .put(["Photo"], (newProfile{"Photo"} || defaultProfile{"Photo"})) 
+                  .put(["_created"], created)
+                  .put(["_modified"], time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"}))
+                  ;
+        ConstructedProfile;
+      };
+      newly_constructed_profile = (profile == 0) => 
+                                    buildProfile() | 
+                                      "profile exsist";
+      
     }
     if (profile == 0) then { 
       noop(); 
     }
     fired {
-      set ent:profile defaultProfile;
+      set ent:profile newly_constructed_profile;
     }
   }
 
-  rule SDS_update_profile {
+  rule SDS_update_profile {  // do we need this rule?
     select when sds new_profile_item_available
     pre {
       // get when sds was created.
@@ -292,6 +312,7 @@ ruleset b506607x16 {
     }
   }
 
+// pass any number of key value pair 
   rule SDS_update_profile_partial {
     select when sds updated_profile_item_available
     foreach event:attrs() setting(profile_key, profile_value)
