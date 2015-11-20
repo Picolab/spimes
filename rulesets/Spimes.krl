@@ -10,7 +10,7 @@ ruleset b506607x17 {
     logging off
 
     //use module b16x24 alias system_credentials
-    use module b506607x16 alias sds
+    use module b506607x17 alias sds
     //use module b507199x5 alias nano_manager
 
     provides  spime
