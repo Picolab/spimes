@@ -1,5 +1,5 @@
 
-ruleset  {
+ruleset spimes {
   meta {
     name "nano_manager"
     description <<
@@ -68,21 +68,21 @@ ruleset  {
   		noop();
   	}
   	always{
-		raise sds init_provile; 
+		raise sds event init_provile 
 		    attributes 
            	{ 
            		"name": name,
 		    	"discription": discription 
 		    };
 		//raise sds init_settings; 
-		//raise sds init_general; 
-       //     attributes 
-      	//	{	
-      	//		"namespace": "spime",
-        //   		"mapvalues": { "name": name,
-		//     					"discription": discription 
-		//     				 }
-        //  	};
+		raise sds event init_general  
+            attributes 
+      		{	
+      			"namespace": "spime",
+           		"mapvalues": { "name": name,
+		     					"discription": discription 
+		     				 }
+         	};
   	}
   }
   

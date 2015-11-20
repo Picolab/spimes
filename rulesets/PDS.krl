@@ -15,7 +15,7 @@ ruleset b506607x16 {
 
     // --------------------------------------------
     // ent:profile
-    //      defaultProfile = {
+    //      Profile = {
     //        "Name": "",
     //        "discription": "",
     //        "location": "",
@@ -25,13 +25,11 @@ ruleset b506607x16 {
     //      }
     // ent:general
     //      namespace : {
-    //          spime : {
-    //                key : <value>
-    //          }
+    //           key : <value>
     //     }
     // 
     // ent:settings 
-    //     "a169x222" : {
+    //     "<rulesetID>" : {
     //       "Name"   : "",
     //       "RID"    : "a169x222",
     //       "Data"   : {},
@@ -43,8 +41,6 @@ ruleset b506607x16 {
   }
 
   global {
-    thisRID = meta:rid();
-
 
    /* // -fordebugging???-------------------------------------------
     get_all_items = function() {
@@ -130,12 +126,12 @@ ruleset b506607x16 {
 
     // --------------------------------------------
     get_setting_data_value = function(setRID, setKey) {
-      ent:settings{[setRID, "setData", setKey]}
+      ent:settings{[setRID, "Data", setKey]}
     };
 
     get_config_value = function(setKey) {
       setRID = meta:callingRID();
-      ent:settings{[setRID, "setData", setKey]}
+      ent:settings{[setRID, "Data", setKey]}
     };
 
     defaultProfile = {
@@ -147,10 +143,10 @@ ruleset b506607x16 {
       "Photo": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
     };
 
-    defaultCloud = {
-      "mySchemaName" : "Person",
-      "myDoorbell" : "none"
-    };
+//    defaultCloud = {
+//      "mySchemaName" : "Person",
+//      "myDoorbell" : "none"
+//    };
   }
 // Rules
 // ent: general
@@ -360,7 +356,7 @@ ruleset b506607x16 {
       set ent:settings{[setRID, "RID"]}    setRID if not setRID;
       set ent:settings{[setRID, "Schema"]} setSchema if not setSchema;
       set ent:settings{[setRID, "Data"]}   setData if not setData;
-      set ent:settings{[setRID, "setData", setAttr]} setValue if not setAttr;
+      set ent:settings{[setRID, "Data", setAttr]} setValue if not setAttr;
     }
   }
   /*
