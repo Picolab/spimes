@@ -56,7 +56,7 @@ ruleset b506607x16 {
       };
       return = (keyvalue.isnull()) => item(namespace, key) | multipleItems( namespace);
       {
-       'status'   : ("succes"),
+       'status'   : ("success"),
         'general'     : return
       };
     }
@@ -77,8 +77,8 @@ ruleset b506607x16 {
         };
         return = (key.isnull()) => get_all_profile() | get_profile(key);
         {
-       'status'   : ("succes"),
-        'profiles'     : return
+       'status'   : ("success"),
+        'profile'     : return
         };
     };
 
@@ -108,7 +108,7 @@ ruleset b506607x16 {
       return = (Key.isnull()) => ((Rid.isnull()) => get_setting_all() | get_setting(Rid) ) | (
                               Rid.isnull() => "error" | get_setting_value(Rid,Key));
       {
-       'status'   : "succes",
+       'status'   : "success",
         'settings' : return
       };
     }

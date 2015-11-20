@@ -10,7 +10,7 @@ ruleset b506607x17 {
     logging off
 
     //use module b16x24 alias system_credentials
-    use module b506607x17 alias sds
+    use module b506607x16 alias sds
     //use module b507199x5 alias nano_manager
 
     provides  spime
@@ -44,13 +44,13 @@ ruleset b506607x17 {
  	spime = function (profilekey,settingskey,generalkey){
        spime_profile = sds:profile(profilekey);
       // spime_settings = sds:settings(settingskey);
-       spime_general = sds:general(generalkey);
+       //spime_general = sds:general(generalkey);
 
       {
        'status'   : ("coool beans!"),
-        'profile'     : spime_profile,
+        'profile'     : spime_profile
         //'settings'     : spime_settings,
-        'general'     : spime_general
+        //'general'     : spime_general
       };
  	}
   }
