@@ -43,14 +43,14 @@ ruleset b506607x17 {
   global { 
  	spime = function (profilekey,settingskey,generalkey){
        spime_profile = sds:profile(profilekey);
-      // spime_settings = sds:settings(settingskey);
-       //spime_general = sds:general(generalkey);
+       spime_settings = sds:settings(settingskey);
+       spime_general = sds:general(generalkey);
 
       {
        'status'   : ("coool beans!"),
-        'profile'     : spime_profile
-        //'settings'     : spime_settings,
-        //'general'     : spime_general
+        'profile'     : spime_profile,
+        'settings'     : spime_settings,
+        'general'     : spime_general
       };
  	}
   }
@@ -60,6 +60,33 @@ ruleset b506607x17 {
   //create, 
   rule createSpime{
   	select when spime create_spime
+  	pre{
+  		name = event:attr("owner");
+  		discription = event:attr("discription");
+  	}
+  	{
+  		noop();
+  	}
+  	always{
+		raise sds event init_profile 
+		    attributes 
+           	{ 
+           		"Name": name,
+		    	"Discription": discription 
+		    };
+		//raise sds init_settings; 
+		raise sds event new_map_available // init general  
+            attributes 
+      		{	
+      			"namespace": "spime",
+           		"mapvalues": { "name": name,
+		     					"discription": discription 
+		     				 }
+         	};
+  	}
+  }
+ rule editSpimeProfile{
+  	select when spime edit_spime_profile
   	pre{
   		name = event:attr("owner");
   		discription = event:attr("discription");
