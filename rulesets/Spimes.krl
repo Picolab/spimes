@@ -44,7 +44,7 @@ ruleset b506607x17 {
  	spime = function (profilekey,settingskey,generalkey){
        spime_profile = sds:profile(profilekey);
        spime_settings = sds:settings(settingskey);
-       spime_general = sds:general(generalkey);
+       spime_general = sds:items(generalkey);
 
       {
        'status'   : ("coool beans!"),
