@@ -296,7 +296,7 @@ ruleset b506607x16 {
     }
   }
   rule SDS_edit_profile {
-    select when sds edited_spime_profile
+    select when sds edited_profile
     pre {
       profile = ent:profile;
       newProfile = event:attrs().defaultsTo(0, "no attrs");
