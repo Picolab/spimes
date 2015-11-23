@@ -7,10 +7,10 @@ ruleset b506607x16 {
     author "Phil Windley & Ed Orcutt & PicoLabs"
     logging off
 
-    sharing on
     provides items, get_keys, profile,
              list_settings, settings,
-             get_config_value, get_all_items,
+             get_config_value, get_all_items
+    sharing on
 
 
     // --------------------------------------------
