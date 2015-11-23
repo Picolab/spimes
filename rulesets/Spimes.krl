@@ -42,11 +42,11 @@ ruleset b506607x17 {
   */
   global { 
  	spime = function (profilekey,settingskey,generalkey){
-       spime_profile = sds:profile(profilekey);
+       spime_profile = sds:profile(profilekey).klog("profile");
        profile = spime_profile{"profile"};
-       spime_settings = sds:settings(settingskey);
+       spime_settings = sds:settings(settingskey).klog("settings");
        settings = spime_settings{"settings"};
-       spime_general = sds:items(generalkey);
+       spime_general = sds:items(generalkey).klog("general");
        general = spime_general{"general"};
 
       {
