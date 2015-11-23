@@ -5,12 +5,13 @@ ruleset b506607x16 {
       Spime Data Services
     >>
     author "Phil Windley & Ed Orcutt & PicoLabs"
-    logging off
+    
+    logging on
 
-    provides items, get_keys, profile,
-             list_settings, settings,
-             get_config_value, get_all_items
+    provides items, get_keys, profile, list_settings, settings, get_config_value
     sharing on
+
+  }
 
 
     // --------------------------------------------
@@ -38,7 +39,6 @@ ruleset b506607x16 {
     //
     // --------------------------------------------
 
-  }
 
   global {
 
