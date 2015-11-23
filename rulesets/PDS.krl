@@ -10,7 +10,8 @@ ruleset b506607x16 {
     sharing on
     provides items, get_keys, profile,
              list_settings, settings,
-             get_config_value, get_all_items
+             get_config_value, get_all_items,
+
 
     // --------------------------------------------
     // ent:profile
@@ -146,6 +147,7 @@ ruleset b506607x16 {
 //      "mySchemaName" : "Person",
 //      "myDoorbell" : "none"
 //    };
+
   }
 // Rules
 
@@ -263,7 +265,7 @@ ruleset b506607x16 {
 
   // profile
   rule SDS_init_profile {
-    select when sds init_provile
+    select when sds init_profile
     pre {
       profile = ent:profile;
       buildProfile = function(){

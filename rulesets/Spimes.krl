@@ -98,7 +98,7 @@ ruleset b506607x17 {
   		noop();
   	}
   	always{
-		raise sds event init_provile 
+		raise sds event init_profile 
 		    attributes 
            	{ 
            		"Name": name,
