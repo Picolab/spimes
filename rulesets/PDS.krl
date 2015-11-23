@@ -5,7 +5,7 @@ ruleset b506607x16 {
       Spime Data Services
     >>
     author "Phil Windley & Ed Orcutt & PicoLabs"
-    
+
     logging on
 
     provides items, get_keys, profile, list_settings, settings, get_config_value
@@ -295,8 +295,36 @@ ruleset b506607x16 {
       set ent:profile newly_constructed_profile;
     }
   }
-
-  rule SDS_update_profile {  // do we need this rule?
+  rule SDS_edit_profile {
+    select when sds edited_spime_profile
+    pre {
+      profile = ent:profile;
+      newProfile = event:attrs().defaultsTo(0, "no attrs");
+      buildProfile = function(newProfile){
+        ConstructedProfile = newProfile// does || work?
+                  .put(["Name"], (newProfile{"Name"} || profile{"Name"})) 
+                  .put(["Description"], (newProfile{"Description"} || profile{"Description"})) 
+                  .put(["location"], (newProfile{"location"} || profile{"location"})) 
+                  .put(["model"], (newProfile{"model"} || profile{"model"})) 
+                  .put(["model_description"], (profile{"model_description"} || profile{"model_description"})) 
+                  .put(["Photo"], (newProfile{"Photo"} || profile{"Photo"})) 
+                  .put(["_modified"], time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"}))
+                  ;
+        ConstructedProfile;
+      };
+      newly_constructed_profile = (newProfile == 0) => // as long as we have something to update
+                                    buildProfile(newProfile) | 
+                                      "nothing to update";
+      
+    }
+    if (newProfile == 0) then { 
+      noop(); 
+    }
+    fired {
+      set ent:profile newly_constructed_profile;
+    }
+  }
+ /* rule SDS_update_profile {  // do we need this rule?
     select when sds new_profile_item_available
     pre {
       // get when sds was created.

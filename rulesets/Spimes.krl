@@ -89,30 +89,15 @@ ruleset b506607x17 {
   	}
   }
  rule editSpimeProfile{
-  	select when spime edit_spime_profile
+  	select when spime edited_spime_profile
   	pre{
-  		name = event:attr("owner");
-  		discription = event:attr("discription");
   	}
   	{
   		noop();
   	}
   	always{
-		raise sds event init_profile 
-		    attributes 
-           	{ 
-           		"Name": name,
-		    	"Discription": discription 
-		    };
-		//raise sds init_settings; 
-		raise sds event new_map_available // init general  
-            attributes 
-      		{	
-      			"namespace": "spime",
-           		"mapvalues": { "name": name,
-		     					"discription": discription 
-		     				 }
-         	};
+		raise sds event edit_profile 
+		    attributes event:attrs();
   	}
   }
   
