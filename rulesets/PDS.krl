@@ -317,7 +317,7 @@ ruleset b506607x16 {
                                       "nothing to update";
       
     }
-    if (newProfile == 0) then { 
+    if (newProfile neq 0) then { 
       noop(); 
     }
     fired {
