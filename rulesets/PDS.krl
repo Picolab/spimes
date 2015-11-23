@@ -437,16 +437,17 @@ ruleset b506607x16 {
     }
   }
 // do we need this rule??????????
-  rule SDS_application_uninstalled {
-    select when explicit application_uninstalled
+ */ 
+ rule SDS_spime_remove {
+    select when sds spime_uninstalled
     pre{
-      appid = event:attr("appid").defaultsTo("","no appid");
     }
     always {
-      clear ent:settings{appid};
+      clear ent:general;
+      clear ent:profile;
+      clear ent:settings;
     }
   }
-*/
   // ------------------------------------------------------------------------
   // Beyond here there be dragons :)
   // ------------------------------------------------------------------------
