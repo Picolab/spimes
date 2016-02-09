@@ -1,6 +1,6 @@
 ruleset b506607x16 {
   meta {
-    name "SDS"
+    name "PDS"
     description <<
       Spime Data Services
     >>
@@ -42,7 +42,7 @@ ruleset b506607x16 {
 
   global {
 
-   /* // -fordebugging???-------------------------------------------
+   /* // -for debugging???-------------------------------------------
     get_all_items = function() {
       ent:general;
     };
@@ -55,9 +55,10 @@ ruleset b506607x16 {
       multipleItems = function(namespace) {
         ent:general{namespace}
       };
-      return = (keyvalue.isnull()) => item(namespace, key) | multipleItems( namespace);
+      return = (key.isnull()) => multipleItems( namespace) | item(namespace, key) ;
+      status = namespace.isnull() => "failed" | "success";
       {
-       'status'   : ("success"),
+       'status'   : ( status ),
         'general'     : return
       };
     }
@@ -68,6 +69,43 @@ ruleset b506607x16 {
         not num_to_return.isnull() => the_keys.slice(0,num_to_return-1) // only return how much we want
                                     | the_keys
     };
+    /*
+   trips = function(id, limit, offset) {
+       // x_id = id.isnull().klog(">>>> id >>>>>");
+       // x_limit = limit.klog(">>>> limit >>>>>");
+       // x_offset = offset.klog(">>>> offset >>>>>"); 
+
+      id.isnull() || id eq "" => allTrips(limit, offset)
+                               | ent:trips_by_id{mkTid(id)};
+    };
+
+    allTrips = function(limit, offset) {
+      sort_opt = {
+        "path" : ["endTime"],
+  "reverse": true,
+  "compare" : "datetime"
+      };
+
+      max_returned = 25;
+
+      hard_offset = offset.isnull() 
+                 || offset eq ""        => 0               // default
+                  |                        offset;
+
+      hard_limit = limit.isnull() 
+                || limit eq ""          => 10              // default
+                 | limit > max_returned => max_returned
+     |                         limit; 
+
+      global_opt = {
+        "index" : hard_offset,
+  "limit" : hard_limit
+      }; 
+
+      sorted_keys = this2that:transform(ent:trip_summaries, sort_opt, global_opt.klog(">>>> transform using global options >>>> "));
+      sorted_keys.map(function(id){ ent:trip_summaries{id} })
+    };
+    */
 
     profile = function(key){
         get_profile = function(k) {
@@ -77,6 +115,7 @@ ruleset b506607x16 {
           ent:profile;
         };
         return = (key.isnull()) => get_all_profile() | get_profile(key);
+        // status update 
         {
        'status'   : ("success"),
         'profile'     : return
@@ -85,7 +124,7 @@ ruleset b506607x16 {
 
 
     // --------------------------------------------
-    list_settings = function() {
+    settings_names = function() {
       foo = ent:settings.keys().map(function(setRID) {
         setName = ent:settings{[setRID,"setName"]};
         {
@@ -96,7 +135,8 @@ ruleset b506607x16 {
       foo
     };
 
-    settings = function(Rid,Key){
+    settings = function(Rid,Key,detail){
+      //detail defaults to "Data" 
       get_setting_all = function() {
         ent:settings
       };
@@ -108,13 +148,14 @@ ruleset b506607x16 {
       };
       return = (Key.isnull()) => ((Rid.isnull()) => get_setting_all() | get_setting(Rid) ) | (
                               Rid.isnull() => "error" | get_setting_value(Rid,Key));
+      // give options of returning values or details.. 
       {
-       'status'   : "success",
+       'status'   : "success",// update   
         'settings' : return
       };
     }
 
-    // I dont Think we need this function. --------------------------------------------
+    // keep ,--------------------------------------------
     //get_setting_data = function(setRID) {
    //  ent:settings{[setRID, "setData"]}
   //  };
@@ -163,7 +204,7 @@ ruleset b506607x16 {
     }
     always {
       set ent:general{hash_path} value;
-      raise sds event new_data_added with 
+      raise sds event data_added with 
          namespace = namespace and
          keyvalue = keyvalue;
     }
