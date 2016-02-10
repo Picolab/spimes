@@ -11,7 +11,7 @@ ruleset b506607x17 {
 
     //use module b16x24 alias system_credentials
     use module b506607x16 alias sds
-    //use module b507199x5 alias nano_manager
+    use module b507199x5 alias wrangler
 
     provides spime
     sharing on
@@ -41,79 +41,46 @@ ruleset b506607x17 {
 
   */
   global { 
+      cloud_url = "https://#{meta:host()}/sky/cloud/";
+      cloud = function(eci, mod, func, params) {
+              response = http:get("#{cloud_url}#{mod}/#{func}", (params || {}).put(["_eci"], eci));
+   
+   
+              status = response{"status_code"};
+   
+   
+              error_info = {
+                  "error": "sky cloud request was unsuccesful.",
+                  "httpStatus": {
+                      "code": status,
+                      "message": response{"status_line"}
+                  }
+              };
+   
+   
+              response_content = response{"content"}.decode();
+              response_error = (response_content.typeof() eq "hash" && response_content{"error"}) => response_content{"error"} | 0;
+              response_error_str = (response_content.typeof() eq "hash" && response_content{"error_str"}) => response_content{"error_str"} | 0;
+              error = error_info.put({"skyCloudError": response_error, "skyCloudErrorMsg": response_error_str, "skyCloudReturnValue": response_content});
+              is_bad_response = (response_content.isnull() || response_content eq "null" || response_error || response_error_str);
+   
+   
+              // if HTTP status was OK & the response was not null and there were no errors...
+              (status eq "200" && not is_bad_response) => response_content | error
+          };
 
-  //-------------------- Picos function from wrangler --------------------
-
-  children = function() {
-    self = meta:eci();
-    children = pci:list_children(self).defaultsTo("error", standardError("pci children list failed"));
-    {
-      'status' : (children neq "error"),
-      'children' : children
-    }
-  }
-  parent = function() {
-    self = meta:eci();
-    parent = pci:list_parent(self).defaultsTo("error", standardError("pci parent retrieval failed"));
-    {
-      'status' : (parent neq "error"),
-      'parent' : parent
-    }
-  }
-  name = function() {
-    {
-      'status' : true,
-      'picoName' : ent:name
-    }
-  }
-  attributes = function() {
-    {
-      'status' : true,
-      'attributes' : ent:attributes
-    }
-  }
-  prototypes = function() {
-    {
-      'status' : true,
-      'prototypes' : ent:prototypes
-    }
-  }
-  
-  
-  deletePico = defaction(eci) {
-    noret = pci:delete_pico(eci, {"cascade":1});
-    send_directive("deleted pico #{eci}");
-  }
-  
-  
-  prototypeDefinitions = {
-    "core": [
-        "b507199x5.dev"
-      //"a169x625"
-    ]
-  }
-  picoFactory = defaction(myEci, name, protos) {
-    newPicoInfo = pci:new_pico(myEci);
-    newPico = newPicoInfo{"cid"};
-    a = pci:new_ruleset(newPico, prototypeDefinitions{"core"}); 
-    b = protos.map(function(x) {pci:new_ruleset(newPico, prototypeDefinitions{x});});
-    
-    event:send({"eci":newPico}, "wrangler", "child_created")
-      with attrs = {
-        "name" : name
-      }
-  }
-
-
-  //-------------------- Picos function from wrangler --------------------
-
-
-
-
-
-
-
-
+    spimes = function (){
+      spimes = wrangler:children();
+      pdsSpimes = spimes.map( function(array) { 
+        array.append([{
+          'status'   : ("coool beans!"),
+          'profile'     : cloud(array[0],sds,profile, "").klog("profile"),
+          'settings'     : cloud(array[0],sds,settings,"").klog("settings"),
+          'general'     : cloud(array[0],sds,items,"").klog("general")
+        }]);
+      });
+      pdsSpimes;
+    };
 
   /* ---------------- the pico that represents the spime may not have this ruleset, so this function is dead code. 
   // we will have to call sds functions on the child pico.
@@ -137,117 +104,32 @@ ruleset b506607x17 {
   //------------------------------------------------------------------------------------Rules
   //-------------------- Rulesets --------------------
   //create, 
+
+
+
+//-------------------- Picos rules from wrangler  ----------------------
   rule createSpime{
-
-
-
-
-//-------------------- Picos rules from wrangler  ----------------------
-  rule createChild {
-    select when wrangler child_creation
-    
-    pre {
-      myEci = meta:eci();
-      
-      name = event:attr("name").defaultsTo("", standardError("no name passed"));
-    }
-
-    if (name neq "") then
-    {
-      picoFactory(myEci, name, []);
-    }
-    
-    fired {
-      log(standardOut("pico created with name #{name}"));
-    }
-    else
-    {
-      log "no name passed for new child";
-    }
-  }
-   
-  rule initializeChild {
-    select when wrangler child_created
-    
-    pre {
-      name = event:attr("name");
-      //attrs = event:attr("attributes").decode();
-      //protos = event:attr("prototypes").decode();
-    }
-    
-    {
-      noop();
-    }
-    
-    fired {
-      set ent:name name;
-      //set ent:attributes attrs;
-      //set ent:prototypes protos;
-    }
-  }
-
-  rule setPicoAttributes {
-    select when wrangler set_attributes_requested
-    pre {
-      newAttrs = event:attr("attributes").decode().defaultsTo("", standardError("no attributes passed"));
-    }
-    if(newAttrs neq "") then
-    {
-      noop();
-    }
-    fired {
-      set ent:attributes newAttrs;
-    }
-    else {
-      log "no attributes passed to set pico rule";
-    }
-  }
-  
-  rule clearPicoAttributes {
-    select when wrangler clear_attributes_requested
-    pre {
-    }
-    {
-      noop();
-    }
-    fired {
-      clear ent:attributes;
-    }
-  }
-  
-  rule deleteChild {
-    select when wrangler child_deletion
-    pre {
-      eciDeleted = event:attr("deletionTarget").defaultsTo("", standardError("missing pico for deletion"));
-    }
-    if(eciDeleted neq "") then
-    {
-      deletePico(eciDeleted);
-    }
-    notfired {
-      log "deletion failed because no child was specified";
-    }
-  }
-
-//-------------------- Picos rules from wrangler  ----------------------
-  
-
   	select when spime create_spime
   	pre{
-  		name = event:attr("owner");
-  		discription = event:attr("discription");
   	}
   	{
   		noop();
   	}
   	always{
-		raise sds event init_profile 
-		    attributes 
-           	{ 
-           		"Name": name,
-		    	"Discription": discription 
-		    };
+    raise wrangler event 'child_creation'
+      attributes event:attrs();
+    }
+  }
+
+  rule init_PDS{
+    select when wrangler child_created
+    // init pds profile trigers on this same event.
 		//raise sds init_settings; 
+    pre{}
+    {
+      noop();
+    }
+    always{
 		raise sds event new_map_available // init general  
             attributes 
       		{	
@@ -255,9 +137,10 @@ ruleset b506607x17 {
            		"mapvalues": { "name": name,
 		     					"discription": discription 
 		     				 }
-         	};
+         	}
   	}
   }
+
  rule editSpimeProfile{
   	select when spime edited_spime_profile
   	pre{

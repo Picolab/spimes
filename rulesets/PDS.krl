@@ -4,7 +4,7 @@ ruleset b506607x16 {
     description <<
       Spime Data Services
     >>
-    author "Phil Windley & Ed Orcutt & PicoLabs"
+    author "Phil Windley & Ed Orcutt & BurdettAdam"
 
     logging on
 
@@ -306,7 +306,7 @@ ruleset b506607x16 {
 
   // profile
   rule SDS_init_profile {
-    select when sds init_profile
+    select when sds init_profile or wrangler child_created
     pre {
       profile = ent:profile;
       buildProfile = function(){
@@ -507,7 +507,6 @@ ruleset b506607x16 {
       set ent:settings{hash_path} setValue;
     }
   }
-// do we need this rule??????????
  */ 
  rule SDS_spime_remove {
     select when sds spime_uninstalled
