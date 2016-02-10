@@ -41,42 +41,15 @@ ruleset b506607x17 {
 
   */
   global { 
-      cloud_url = "https://#{meta:host()}/sky/cloud/";
-      cloud = function(eci, mod, func, params) {
-              response = http:get("#{cloud_url}#{mod}/#{func}", (params || {}).put(["_eci"], eci));
-   
-   
-              status = response{"status_code"};
-   
-   
-              error_info = {
-                  "error": "sky cloud request was unsuccesful.",
-                  "httpStatus": {
-                      "code": status,
-                      "message": response{"status_line"}
-                  }
-              };
-   
-   
-              response_content = response{"content"}.decode();
-              response_error = (response_content.typeof() eq "hash" && response_content{"error"}) => response_content{"error"} | 0;
-              response_error_str = (response_content.typeof() eq "hash" && response_content{"error_str"}) => response_content{"error_str"} | 0;
-              error = error_info.put({"skyCloudError": response_error, "skyCloudErrorMsg": response_error_str, "skyCloudReturnValue": response_content});
-              is_bad_response = (response_content.isnull() || response_content eq "null" || response_error || response_error_str);
-   
-   
-              // if HTTP status was OK & the response was not null and there were no errors...
-              (status eq "200" && not is_bad_response) => response_content | error
-          };
 
     spimes = function (){
       spimes = wrangler:children();
       pdsSpimes = spimes.map( function(array) { 
         array.append([{
           'status'   : ("coool beans!"),
-          'profile'     : cloud(array[0],sds,profile, "").klog("profile"),
-          'settings'     : cloud(array[0],sds,settings,"").klog("settings"),
-          'general'     : cloud(array[0],sds,items,"").klog("general")
+          'profile'     : wrangler:skyQuery(array[0],sds,profile, "").klog("profile"),
+          'settings'     : wrangler:skyQuery(array[0],sds,settings,"").klog("settings"),
+          'general'     : wrangler:skyQuery(array[0],sds,items,"").klog("general")
         }]);
       });
       pdsSpimes;

@@ -1,6 +1,6 @@
 ruleset b506607x16 {
   meta {
-    name "PDS"
+    name "SDS"
     description <<
       Spime Data Services
     >>
@@ -8,7 +8,7 @@ ruleset b506607x16 {
 
     logging on
 
-    provides items, get_keys, profile, list_settings, settings, get_config_value
+    provides items, get_keys, profile, settings, get_config_value
     sharing on
 
   }
@@ -306,7 +306,8 @@ ruleset b506607x16 {
 
   // profile
   rule SDS_init_profile {
-    select when sds init_profile or wrangler child_created
+    select when sds init_profile 
+    or wrangler child_created
     pre {
       profile = ent:profile;
       buildProfile = function(){
