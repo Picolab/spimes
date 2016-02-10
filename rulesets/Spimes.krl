@@ -95,9 +95,7 @@ ruleset b506607x17 {
   }
 
   rule init_PDS{
-    select when wrangler child_created
-    // init pds profile trigers on this same event.
-		//raise sds init_settings; 
+    select when wrangler child_created //  we should select only on a certin attribute
     pre{}
     {
       noop();
@@ -107,8 +105,8 @@ ruleset b506607x17 {
             attributes 
       		{	
       			"namespace": "spime",
-           		"mapvalues": { "name": name,
-		     					"discription": discription 
+           		"mapvalues": { "name": "tedrub",
+		     					"discription": "ted rub was a bear!" 
 		     				 }
          	}
   	}
