@@ -94,8 +94,8 @@ ruleset b506607x17 {
     }
   }
 
-  rule init_PDS{
-    select when wrangler child_created //  we should select only on a certin attribute
+  rule initPdsGeneral{
+    select when wrangler child_created where prototype eq "spime"//  we should select only on a certin attribute
     pre{}
     {
       noop();
@@ -106,11 +106,29 @@ ruleset b506607x17 {
       		{	
       			"namespace": "spime",
            		"mapvalues": { "name": "tedrub",
-		     					"discription": "ted rub was a bear!" 
+		     					"discription": "ted rub was a time wizard!" 
 		     				 }
          	}
   	}
   }
+
+  rule initPdsPrototype{
+    select when wrangler child_created where prototype eq "spime"//  we should select only on a certin attribute
+    pre{}
+    {
+      noop();
+    }
+    always{
+    raise sds event new_prototype_available // init prototype  
+            attributes 
+          { 
+            "prototype": "hashPath", // this is for front end, so a website can build and display your prototype
+             "structure": { "time": "Mastering"
+                          }
+          }
+    }
+  }
+
 
  rule editSpimeProfile{
   	select when spime edited_spime_profile
