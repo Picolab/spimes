@@ -254,7 +254,7 @@ ruleset b506607x16 {
   }
 
   rule SDS_map_item {
-    select when sds new_map_available
+    select when pds new_sds_map_available
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       mapvalues = event:attr("mapvalues").defaultsTo("", "no mapvalues");

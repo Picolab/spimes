@@ -101,7 +101,7 @@ ruleset b506607x17 {
       noop();
     }
     always{
-		raise sds event new_map_available // init general  
+		raise pds event new_sds_map_available // init general  
             attributes 
       		{	
       			"namespace": "spime",
@@ -119,7 +119,7 @@ ruleset b506607x17 {
       noop();
     }
     always{
-    raise sds event new_prototype_available // init prototype  
+    raise pds event new_sds_prototype_available // init prototype  
             attributes 
           { 
             "prototype": "hashPath", // this is for front end, so a website can build and display your prototype
