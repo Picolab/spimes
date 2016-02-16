@@ -18,34 +18,13 @@ ruleset b506607x17 {
 
   }
 
-  //dispatch {
-    //domain "ktest.heroku.com"
-  //}
-  /*
 
-	spime = {
-		// pr
-		discription :
-		name :
-		policies:
-
-		loction : 
-		eventChain :
-		model (stl) :
-		model instruction :
-
-	}
-
-
-
-
-  */
   global { 
 
     spime_prototype = {
 
       "rids" : ["b507199x7.dev"] ,
-      "events" : [["spime","init"]]
+      "events" : [["spime","init_general"],["spime","init_profile"]]
     }
 
 
@@ -91,13 +70,15 @@ ruleset b506607x17 {
   rule createSpime{
   	select when spime create_spime
   	pre{
+      eventattrs = event:attrs();
+      attributes = eventattrs.put(["prototype"],spime_prototype);
   	}
   	{
   		noop();
   	}
   	always{
     raise wrangler event 'child_creation'
-      attributes event:attrs();
+      attributes attributes;
     }
   }
 

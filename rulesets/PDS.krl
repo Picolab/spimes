@@ -194,8 +194,8 @@ ruleset b506607x16 {
 
 //------------------------------- ent: general
 
-  rule SDS_add_item {
-    select when sds new_data_available
+  rule add_item {
+    select when pds new_data_available
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       keyvalue = event:attr("key").defaultsTo("", "no key");
@@ -204,14 +204,14 @@ ruleset b506607x16 {
     }
     always {
       set ent:general{hash_path} value;
-      raise sds event data_added with 
+      raise pds event data_added with 
          namespace = namespace and
          keyvalue = keyvalue;
     }
   }
 
-  rule SDS_update_item { 
-    select when sds updated_data_available
+  rule update_item { 
+    select when pds updated_data_available
     	foreach(event:attr("value") || {}) setting(akey, avalue)
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
@@ -220,14 +220,14 @@ ruleset b506607x16 {
     }
     always {
       set ent:general{ hash_path } avalue;
-      raise sds event data_updated with 
+      raise pds event data_updated with 
         namespace = namespace and
         keyvalue = keyvalue if last;
     }
   }
 
-  rule SDS_remove_item {
-    select when sds remove_old_data
+  rule remove_item {
+    select when pds remove_old_data
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       keyvalue = event:attr("key").defaultsTo("", "no key");
@@ -235,25 +235,25 @@ ruleset b506607x16 {
     }
     always {
       clear ent:general{hash_path};
-      raise sds event data_deleted with 
+      raise pds event data_deleted with 
         namespace = namespace and
         keyvalue = keyvalue;
     }
   }
 
-  rule SDS_remove_namespace {
-    select when sds remove_namespace
+  rule remove_namespace {
+    select when pds remove_namespace
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
     }
     always {
       clear ent:general{namespace};
-      raise sds event namespace_deleted with 
+      raise pds event namespace_deleted with 
         namespace = namespace;
     }
   }
 
-  rule SDS_map_item {
+  rule map_item {
     select when pds new_sds_map_available
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
@@ -261,14 +261,14 @@ ruleset b506607x16 {
     }
     always {
       set ent:general{namespace} mapvalues;
-      raise sds event new_map_added  with 
+      raise pds event new_map_added  with 
            namespace = namespace and
            mapvalues = mapvalues;
     }
   }
 
-  rule SDS_add_spime_item { // uses different hash_path to add a varible
-    select when sds new_data2_available
+  rule add_spime_item { // uses different hash_path to add a varible
+    select when pds new_data2_available
     pre {
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       spime = event:attr("spime").defaultsTo("", "no spime");
@@ -305,9 +305,8 @@ ruleset b506607x16 {
 
 
   // profile
-  rule SDS_init_profile {
-    select when sds init_profile 
-    or wrangler child_created
+  rule init_profile { // should we compine with edit_profile
+    select when pds init_profile 
     pre {
       profile = ent:profile;
       buildProfile = function(){
@@ -337,8 +336,8 @@ ruleset b506607x16 {
       set ent:profile newly_constructed_profile;
     }
   }
-  rule SDS_edit_profile {
-    select when sds edited_profile
+  rule edit_profile {
+    select when pds edited_profile
     pre {
       profile = ent:profile;
       newProfile = event:attrs().defaultsTo(0, "no attrs");
@@ -433,8 +432,8 @@ ruleset b506607x16 {
     //       "Data"   : {},
     //       "Schema" : []
     //     }
-  rule SDS_add_to_settings{ // will this fire with out kre stopping the failed passed varibles
-    select when sds new_settings_schema
+  rule add_to_settings{ // will this fire with out kre stopping the failed passed varibles
+    select when pds new_settings_schema
     pre {
       setName   = event:attr("Name").defaultsTo(0,"no Name");
       setRID    = event:attr("RID").defaultsTo(0,"no RID");
@@ -510,7 +509,7 @@ ruleset b506607x16 {
   }
  */ 
  rule SDS_spime_remove {
-    select when sds spime_uninstalled
+    select when pds spime_uninstalled
     pre{
     }
     always {
