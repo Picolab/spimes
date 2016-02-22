@@ -8,7 +8,11 @@ ruleset b506607x16 {
 
     logging on
 
-    provides items, get_keys, profile, settings, get_config_value
+    provides items, get_keys, // general
+     profile, // profile
+     settings, get_config_value, get_setting_data_value , config_value// settings
+
+    
     sharing on
 
   }
@@ -126,7 +130,7 @@ ruleset b506607x16 {
     // --------------------------------------------
     settings_names = function() {
       foo = ent:settings.keys().map(function(setRID) {
-        setName = ent:settings{[setRID,"setName"]};
+        setName = ent:settings{[setRID,"Name"]};
         {
           "setRID": setRID,
           "setName": setName
@@ -135,20 +139,23 @@ ruleset b506607x16 {
       foo
     };
 
-    settings = function(Rid,Key,detail){
-      //detail defaults to "Data" 
+    settings = function(Rid,Key,detail){ // do we need to have  a default for detail?
+      //detail only will work with "Data" varible
       get_setting_all = function() {
         ent:settings
       };
-      get_setting = function(setRID) {
-        ent:settings{setRID}
+      get_setting = function(rid) {
+        ent:settings{rid}
       };
-      get_setting_value = function(setRID, setKey) {
-        ent:settings{[setRID, setKey]}
+      get_setting_value = function(rid, varible) {
+        ent:settings{[rid, varible]}
+      };
+      get_setting_value_default = function(rid, varible, value) {
+        ent:settings{[rid, "Data",value]}
       };
       return = (Key.isnull()) => ((Rid.isnull()) => get_setting_all() | get_setting(Rid) ) | (
-                              Rid.isnull() => "error" | get_setting_value(Rid,Key));
-      // give options of returning values or details.. 
+                              Rid.isnull() => "error" | 
+                              ( (key eq "Data") => get_setting_value_default(Rid,Key,detail) | get_setting_value(Rid,Key)));
       {
        'status'   : "success",// update   
         'settings' : return
@@ -156,21 +163,21 @@ ruleset b506607x16 {
     }
 
     // keep ,--------------------------------------------
-    //get_setting_data = function(setRID) {
-   //  ent:settings{[setRID, "setData"]}
-  //  };
+    setting_data = function(setRID) {
+     ent:settings{[setRID, "Data"]}
+    };
 
     // --------------------------------------------
- //   get_setting_schema = function(setRID) {
- //    ent:settings{[setRID, "setSchema"]}
- //   };
+    setting_schema = function(setRID) {
+     ent:settings{[setRID, "Schema"]}
+    };
 
     // -------------------------------------------- I think sorting and filtering should be done by client or spime_management and not the server
-    get_setting_data_value = function(setRID, setKey) {
+    setting_data_value = function(setRID, setKey) {
       ent:settings{[setRID, "Data", setKey]}
     };
 
-    get_config_value = function(setKey) {
+    config_value = function(setKey) {
       setRID = meta:callingRID();
       ent:settings{[setRID, "Data", setKey]}
     };
@@ -253,8 +260,8 @@ ruleset b506607x16 {
     }
   }
 
-  rule map_item {
-    select when pds new_sds_map_available
+  rule itemed_mapped {
+    select when pds map_item
     pre{
       namespace = event:attr("namespace").defaultsTo("", "no namespace");
       mapvalues = event:attr("mapvalues").defaultsTo("", "no mapvalues");
@@ -266,7 +273,7 @@ ruleset b506607x16 {
            mapvalues = mapvalues;
     }
   }
-
+// should not be here !!!!!!!
   rule add_spime_item { // uses different hash_path to add a varible
     select when pds new_data2_available
     pre {
@@ -305,7 +312,8 @@ ruleset b506607x16 {
 
 
   // profile
-  rule init_profile { // should we compine with edit_profile
+  /*
+  rule init_profile { // should we combine with edit_profile? we only need to add created varible check in edit.
     select when pds init_profile 
     pre {
       profile = ent:profile;
@@ -336,11 +344,13 @@ ruleset b506607x16 {
       set ent:profile newly_constructed_profile;
     }
   }
-  rule edit_profile {
-    select when pds edited_profile
+  */
+  rule update_profile {
+    select when pds updated_profile
     pre {
       profile = ent:profile;
       newProfile = event:attrs().defaultsTo(0, "no attrs");
+      created = function(){time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"});};
       buildProfile = function(newProfile){
         ConstructedProfile = newProfile// does || work?
                   .put(["Name"], (newProfile{"Name"} || profile{"Name"})) 
@@ -349,6 +359,7 @@ ruleset b506607x16 {
                   .put(["model"], (newProfile{"model"} || profile{"model"})) 
                   .put(["model_description"], (profile{"model_description"} || profile{"model_description"})) 
                   .put(["Photo"], (newProfile{"Photo"} || profile{"Photo"})) 
+                  .put(["_created"], (newProfile{"_created"}||created()))
                   .put(["_modified"], time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"}))
                   ;
         ConstructedProfile;
@@ -358,7 +369,7 @@ ruleset b506607x16 {
                                       "nothing to update";
       
     }
-    if (newProfile neq 0) then { 
+    if (newly_constructed_profile neq "nothing to update") then { 
       noop(); 
     }
     fired {
@@ -432,8 +443,8 @@ ruleset b506607x16 {
     //       "Data"   : {},
     //       "Schema" : []
     //     }
-  rule add_to_settings{ // will this fire with out kre stopping the failed passed varibles
-    select when pds new_settings_schema
+  rule settings_added{ // will this fire with out kre stopping the failed passed varibles
+    select when pds add_settings
     pre {
       setName   = event:attr("Name").defaultsTo(0,"no Name");
       setRID    = event:attr("RID").defaultsTo(0,"no RID");
@@ -447,7 +458,7 @@ ruleset b506607x16 {
       set ent:settings{[setRID, "Name"]}   setName if not setName;
       set ent:settings{[setRID, "RID"]}    setRID if not setRID;
       set ent:settings{[setRID, "Schema"]} setSchema if not setSchema;
-      set ent:settings{[setRID, "Data"]}   setData if not setData;
+      //set ent:settings{[setRID, "Data"]}   setData if not setData;
       set ent:settings{[setRID, "Data", setAttr]} setValue if not setAttr;
     }
   }
