@@ -21,11 +21,7 @@ ruleset b506607x17 {
 
   global { 
 
-    spime_prototype = {
 
-      "rids" : ["b507199x7.dev"] ,
-      "events" : [["spime","init_general"],["spime","init_profile"]]
-    }
 
 
     spimes = function (){
