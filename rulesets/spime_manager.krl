@@ -73,11 +73,13 @@ ruleset b507199x7 {
                               ;
   	}
   	{
-  		noop();
+  		event:send({"cid":meta:eci()}, "wrangler", "child_creation")  
+      with attrs = attributes;
   	}
   	always{
-    raise wrangler event 'child_creation'
-      attributes attributes;
+      log("create spime");
+   // raise wrangler event 'child_creation'
+   //   attributes attributes;
     }
   }
 
