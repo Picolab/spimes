@@ -1,10 +1,10 @@
 ruleset b506607x16 {
   meta {
-    name "SDS"
+    name "PDS"
     description <<
       Spime Data Services
     >>
-    author "Phil Windley & Ed Orcutt & BurdettAdam"
+    author "Phil Windley & Ed Orcutt & PICOLABS"
 
     logging on
 
@@ -20,9 +20,9 @@ ruleset b506607x16 {
 
     // --------------------------------------------
     // ent:profile
-    //      Profile = {
+    //       {
     //        "Name": "",
-    //        "discription": "",
+    //        "description": "",
     //        "location": "",
     //        "model": "",
     //        "model_description": "",
@@ -36,7 +36,7 @@ ruleset b506607x16 {
     // ent:settings 
     //     "<rulesetID>" : {
     //       "Name"   : "",
-    //       "RID"    : "a169x222",
+    //       "RID"    : <rulesetID>,
     //       "Data"   : {},
     //       "Schema" : []
     //     }
@@ -66,8 +66,8 @@ ruleset b506607x16 {
         'general'     : return
       };
     }
-    // set up pagination. look at fuse_fuel.krl allfillup 
-    get_keys = function(namespace, sort_opt, num_to_return) {
+    // set up pagination. look at fuse_fuel.krl allfillup -DEAD?
+    sorted_values = function(namespace, sort_opt, num_to_return) {
         the_keys = this2that:transform(ent:general{[namespace]}, sort_opt); // get all the keys sorted by the key value provided in sort_opt
         the_keys.isnull()          => [] |
         not num_to_return.isnull() => the_keys.slice(0,num_to_return-1) // only return how much we want
@@ -127,7 +127,7 @@ ruleset b506607x16 {
     };
 
 
-    // --------------------------------------------
+    // --------------------------------------------dead
     settings_names = function() {
       foo = ent:settings.keys().map(function(setRID) {
         setName = ent:settings{[setRID,"Name"]};
@@ -141,7 +141,7 @@ ruleset b506607x16 {
 
     settings = function(Rid,Key,detail){ // do we need to have  a default for detail?
       //detail only will work with "Data" varible
-      get_setting_all = function() {
+      get_setting_all = function() { //dead, rid should never be null
         ent:settings
       };
       get_setting = function(rid) {
@@ -153,7 +153,7 @@ ruleset b506607x16 {
       get_setting_value_default = function(rid, varible, value) {
         ent:settings{[rid, "Data",value]}
       };
-      return = (Key.isnull()) => ((Rid.isnull()) => get_setting_all() | get_setting(Rid) ) | (
+      return = (Key.isnull()) => (get_setting(Rid) ) | (
                               Rid.isnull() => "error" | 
                               ( (key eq "Data") => get_setting_value_default(Rid,Key,detail) | get_setting_value(Rid,Key)));
       {
@@ -348,7 +348,7 @@ ruleset b506607x16 {
   rule update_profile {
     select when pds updated_profile
     pre {
-      profile = ent:profile;
+      profile = ent:profile || defaultProfile;
       newProfile = event:attrs().defaultsTo(0, "no attrs");
       created = function(){time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"});};
       buildProfile = function(newProfile){
@@ -359,7 +359,7 @@ ruleset b506607x16 {
                   .put(["model"], (newProfile{"model"} || profile{"model"})) 
                   .put(["model_description"], (profile{"model_description"} || profile{"model_description"})) 
                   .put(["Photo"], (newProfile{"Photo"} || profile{"Photo"})) 
-                  .put(["_created"], (newProfile{"_created"}||created()))
+                  .put(["_created"], (profile{"_created"}||created()))
                   .put(["_modified"], time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"}))
                   ;
         ConstructedProfile;

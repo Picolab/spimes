@@ -67,7 +67,10 @@ ruleset b506607x17 {
   	select when spime create_spime
   	pre{
       eventattrs = event:attrs();
-      attributes = eventattrs.put(["prototype"],spime_prototype);
+      attributes = eventattrs.put(["Prototype_init_event_domain"],"wrangler")
+                              .put(["Prototype_init_event_type"],"init_spime_events")
+                              .put(["Prototype_rids"],"")
+                              ;
   	}
   	{
   		noop();
