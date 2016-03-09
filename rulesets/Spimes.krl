@@ -27,16 +27,15 @@ ruleset b507199x12 {
     select when wrangler init_spime_events 
       foreach Prototype_events setting (PT_event)
     pre {
-      PTE_domain = PT_event[0];
+      PTE_domain = "explicit";//PT_event[0];
       PTE_type = PT_event[1];
     }
     {
-      noop();
+      event:send({"cid":meta:eci()}, PTE_domain, PTE_type)  
+      with attrs = event:attrs();
     }
     always {
-     // raise PTE_domain event PTE_type 
-      raise explicit event PTE_type 
-            attributes event:attrs()
+      log("init spime");
     }
   }
   rule initializeGeneral{
