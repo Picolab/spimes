@@ -1,5 +1,5 @@
 
-ruleset b506607x17 {
+ruleset b507199x12 {
   meta {
     name "Spime"
     description <<
@@ -21,7 +21,7 @@ ruleset b506607x17 {
   global { 
     // prototypes 
     Prototype_rids = "b507199x7.dev";//"asdf;asdf;asdf"
-    Prototype_events = [["spime","init_general"],["spime","init_profile"],["spime","init_settings"]]; // array of arrays [[domain,type],....], used to create data structure in pds.
+    Prototype_events = [["spime","spime_init_general"],["spime","spime_init_profile"],["spime","spime_init_settings"]]; // array of arrays [[domain,type],....], used to create data structure in pds.
   }
   rule initializeEvents {// this rule should raise events to self that then raise events to pds
     select when wrangler init_spime_events 
@@ -34,12 +34,13 @@ ruleset b506607x17 {
       noop();
     }
     always {
-      raise PTE_domain event PTE_type 
+     // raise PTE_domain event PTE_type 
+      raise explicit event PTE_type 
             attributes event:attrs()
     }
   }
   rule initializeGeneral{
-    select when spime init_general 
+    select when explicit spime_init_general 
     pre{}
     {
       noop();
@@ -57,7 +58,7 @@ ruleset b506607x17 {
   }
 
   rule initializeProfile{
-    select when spime init_profile 
+    select when explicit spime_init_profile 
     pre{}
     {
       noop();
@@ -72,7 +73,7 @@ ruleset b506607x17 {
     }
   }
   rule initializeSettings{
-    select when spime init_settings
+    select when explicit spime_init_settings
     pre{}
     {
       noop();
@@ -90,7 +91,7 @@ ruleset b506607x17 {
   
 
  rule editSpimeProfile{
-  	select when spime edited_spime_profile
+  	select when explicit edited_spime_profile
   	pre{
   	}
   	{
