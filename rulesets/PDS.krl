@@ -364,7 +364,7 @@ ruleset b506607x16 {
                   ;
         ConstructedProfile;
       };
-      newly_constructed_profile = (newProfile == 0) => // as long as we have something to update
+      newly_constructed_profile = (newProfile neq 0) => // as long as we have something to update
                                     buildProfile(newProfile) | 
                                       "nothing to update";
       
