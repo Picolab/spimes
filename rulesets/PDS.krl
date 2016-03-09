@@ -21,12 +21,12 @@ ruleset b506607x16 {
     // --------------------------------------------
     // ent:profile
     //       {
-    //        "Name": "",
+    //        "name": "",
     //        "description": "",
     //        "location": "",
     //        "model": "",
     //        "model_description": "",
-    //        "Photo": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
+    //        "photo": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
     //      }
     // ent:general
     //      namespace : {
@@ -35,10 +35,10 @@ ruleset b506607x16 {
     // 
     // ent:settings 
     //     "<rulesetID>" : {
-    //       "Name"   : "",
-    //       "RID"    : <rulesetID>,
-    //       "Data"   : {},
-    //       "Schema" : []
+    //       "name"   : "",
+    //       "rID"    : <rulesetID>,
+    //       "data"   : {},
+    //       "schema" : []
     //     }
     //
     // --------------------------------------------
@@ -183,12 +183,12 @@ ruleset b506607x16 {
     };
 
     defaultProfile = {
-      "Name": "",
-      "Notes": "",
+      "name": "",
+      "notes": "",
       "location": "",
       "model": "",
-      "Description": "",
-      "Photo": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
+      "description": "",
+      "pohoto": "https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png"
     };
 
 //    defaultCloud = {
@@ -353,12 +353,12 @@ ruleset b506607x16 {
       created = function(){time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"});};
       buildProfile = function(newProfile){
         ConstructedProfile = newProfile// does || work?
-                  .put(["Name"], (newProfile{"Name"} || profile{"Name"})) 
-                  .put(["Description"], (newProfile{"Description"} || profile{"Description"})) 
+                  .put(["name"], (newProfile{"name"} || profile{"name"})) 
+                  .put(["description"], (newProfile{"description"} || profile{"description"})) 
                   .put(["location"], (newProfile{"location"} || profile{"location"})) 
                   .put(["model"], (newProfile{"model"} || profile{"model"})) 
                   .put(["model_description"], (profile{"model_description"} || profile{"model_description"})) 
-                  .put(["Photo"], (newProfile{"Photo"} || profile{"Photo"})) 
+                  .put(["photo"], (newProfile{"photo"} || profile{"photo"})) 
                   .put(["_created"], (profile{"_created"}||created()))
                   .put(["_modified"], time:strftime(time:now(), "%Y%m%dT%H%M%S%z", {"tz":"UTC"}))
                   ;
