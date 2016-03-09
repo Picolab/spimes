@@ -1,5 +1,5 @@
 
-ruleset b506607x17 {
+ruleset b507199x7 {
   meta {
     name "Spime_manager"
     description <<
@@ -11,7 +11,7 @@ ruleset b506607x17 {
 
     //use module b16x24 alias system_credentials
     use module b506607x16 alias sds
-    use module b507199x5 alias wrangler
+    //use module b507199x5 alias wrangler
 
     provides spime
     sharing on
@@ -69,7 +69,7 @@ ruleset b506607x17 {
       eventattrs = event:attrs();
       attributes = eventattrs.put(["Prototype_init_event_domain"],"wrangler")
                               .put(["Prototype_init_event_type"],"init_spime_events")
-                              .put(["Prototype_rids"],"")
+                              .put(["Prototype_rids"],"b507199x7.dev;b507199x12.dev")
                               ;
   	}
   	{

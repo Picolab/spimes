@@ -1,7 +1,7 @@
 
 ruleset b506607x17 {
   meta {
-    name "Spime_manager"
+    name "Spime"
     description <<
      spimes. space and time 
     >>
