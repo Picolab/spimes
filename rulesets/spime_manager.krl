@@ -10,7 +10,7 @@ ruleset b507199x7 {
     logging on
 
     //use module b16x24 alias system_credentials
-    use module b506607x16 alias sds
+    use module b506607x16 alias pds
     //use module b507199x5 alias wrangler
 
     provides spime
@@ -29,9 +29,9 @@ ruleset b507199x7 {
       pdsSpimes = spimes.map( function(array) { 
         array.append([{
           'status'   : ("coool beans!"),
-          'profile'     : wrangler:skyQuery(array[0],sds,profile, "").klog("profile"),
-          'settings'     : wrangler:skyQuery(array[0],sds,settings,"").klog("settings"),
-          'general'     : wrangler:skyQuery(array[0],sds,items,"").klog("general")
+          'profile'     : wrangler:skyQuery(array[0],pds,profile, "").klog("profile"),
+          'settings'     : wrangler:skyQuery(array[0],pds,settings,"").klog("settings"),
+          'general'     : wrangler:skyQuery(array[0],pds,items,"").klog("general")
         }]);
       });
       pdsSpimes;

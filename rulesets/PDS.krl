@@ -373,6 +373,7 @@ ruleset b506607x16 {
       noop(); 
     }
     fired {
+      raise sds event "profile_updated" attributes event:attrs();
       set ent:profile newly_constructed_profile;
     }
   }
