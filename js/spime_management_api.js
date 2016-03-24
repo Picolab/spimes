@@ -1,3 +1,4 @@
+    window.wrangler = {};
 wrangler.clientKey = "0F03372E-1078-11E5-BCFA-5FDDE71C24E1";
 wrangler.anonECI = "85255500-0b65-0130-243c-00163ebcdddd";
 wrangler.callbackURL = "http://kre.github.io/devtools/code.html";
@@ -26,7 +27,7 @@ wrangler.functionPath ='sky/cloud';
      * }
      */
 {
-    window.wrangler = {};
+
     window.spime = {};
 
     // ------------------------------------------------------------------------
@@ -205,7 +206,7 @@ wrangler.functionPath ='sky/cloud';
     }
     };
 
-    
+
     wrangler.installedRulesets = function(parameters, postFunction, options)
     {
         return wrangler.skyQuery(get_rid("rulesets"), "rulesets", parameters, postFunction , options); 
