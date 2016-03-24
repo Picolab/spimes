@@ -58,17 +58,19 @@ ruleset b507199x12 {
 
   rule initializeProfile{
     select when explicit spime_init_profile 
-    pre{}
+    pre{
+      attrs = event:attrs();
+    }
     {
       noop();
     }
     always{
-    raise pds event updated_profile // init prototype  
-            attributes 
-          { 
-            "Name": "spime_profile", 
-             "location": "byu-oit"
-          }
+      raise pds event updated_profile // init prototype  
+            attributes attrs
+         // { 
+         //   "Name": "spime_profile", 
+         //    "location": "byu-oit"
+         // }
     }
   }
   rule initializeSettings{

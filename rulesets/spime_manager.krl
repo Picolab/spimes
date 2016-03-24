@@ -26,6 +26,7 @@ ruleset b507199x7 {
 
     spimes = function (){
       spimes = wrangler:children();
+      spms = spimes{"children"};
       pdsSpimes = spimes.map( function(array) { 
         array.append([{
           'status'   : ("coool beans!"),
